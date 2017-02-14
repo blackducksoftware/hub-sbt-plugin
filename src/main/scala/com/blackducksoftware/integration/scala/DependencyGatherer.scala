@@ -26,7 +26,7 @@ class DependencyGatherer(logger: ScalaLogger, includedConfigurations : String) {
                 children.add(getDependencyNode(module))
               )
             } else {
-              logger.info(s"Skipping Configuration : $config")
+              logger.debug(s"Skipping Configuration : $config")
             }
           }
         )

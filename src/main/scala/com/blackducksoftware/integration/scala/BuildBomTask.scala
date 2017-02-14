@@ -135,14 +135,14 @@ object BuildBom extends AutoPlugin {
 
         def waitForHub(logger: ScalaLogger, buildToolHelper : BuildToolHelper, hubServicesFactory : HubServicesFactory, hubProjectName :String,
           hubVersionName : String, hubScanTimeout : Long) : Unit = {
-            logger.info("Waiting for Hub to finish the Bom calculations")
+            logger.info("Waiting for Hub to finish the Bom calculations.")
             try {
                 buildToolHelper.waitForHub(hubServicesFactory, hubProjectName, hubVersionName, hubScanTimeout)
             } catch {
               case hie: IllegalArgumentException =>
                 throw new HubIntegrationException(String.format(BuildToolConstants.SCAN_ERROR_MESSAGE, hie.getMessage()), hie)
             }
-            logger.info("The Hub has finished the Bom calculations")
+            logger.info("Finished waiting for Hub to finish the Bom calculations")
         }
 
         def createHubReport(logger: ScalaLogger, buildToolHelper : BuildToolHelper, hubServicesFactory : HubServicesFactory,
@@ -159,7 +159,7 @@ object BuildBom extends AutoPlugin {
 
         def checkHubPolicies(logger: ScalaLogger, buildToolHelper : BuildToolHelper, hubServicesFactory : HubServicesFactory,
           hubProjectName : String, hubVersionName : String): Unit = {
-          logger.info(String.format(BuildToolConstants.CHECK_POLICIES_STARTING, getBdioFilename(hubProjectName)))
+          logger.info(String.format(BuildToolConstants.CHECK_POLICIES_STARTING, hubProjectName))
            try {
               var policyStatusItem = buildToolHelper.checkPolicies(hubServicesFactory, hubProjectName, hubVersionName)
               handlePolicyStatusItem(logger, policyStatusItem);
@@ -167,7 +167,7 @@ object BuildBom extends AutoPlugin {
             case e: Exception =>
               throw new HubIntegrationException(String.format(BuildToolConstants.CHECK_POLICIES_ERROR, e.getMessage()), e)
           }
-          logger.info(String.format(BuildToolConstants.CHECK_POLICIES_FINISHED, getBdioFilename(hubProjectName)))
+          logger.info(String.format(BuildToolConstants.CHECK_POLICIES_FINISHED, hubProjectName))
         }
 
         def handlePolicyStatusItem(logger : ScalaLogger, policyStatusItem : PolicyStatusItem): Unit = {
@@ -199,7 +199,7 @@ object BuildBom extends AutoPlugin {
         checkPolicies := { false },
         hubScanTimeout := { 300 },
         includedConfigurations := { "compile" },
-        outputDirectory := { new File("./bdio") },
+        outputDirectory := { new File(target.value + java.io.File.separator +"blackduck") },
         buildBomTask :=  { 
             var scalaLogger = new ScalaLogger(streams.value.log)
             var buildToolHelper = new BuildToolHelper(scalaLogger)
