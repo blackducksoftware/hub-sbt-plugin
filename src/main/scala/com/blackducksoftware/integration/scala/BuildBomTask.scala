@@ -135,14 +135,14 @@ object BuildBom extends AutoPlugin {
 
         def waitForHub(logger: ScalaLogger, buildToolHelper : BuildToolHelper, hubServicesFactory : HubServicesFactory, hubProjectName :String,
           hubVersionName : String, hubScanTimeout : Long) : Unit = {
-            logger.info("Waiting for Hub to finish the Bom calculations.")
+            logger.info(BuildToolConstants.BOM_WAIT_STARTING)
             try {
                 buildToolHelper.waitForHub(hubServicesFactory, hubProjectName, hubVersionName, hubScanTimeout)
             } catch {
               case hie: IllegalArgumentException =>
-                throw new HubIntegrationException(String.format(BuildToolConstants.SCAN_ERROR_MESSAGE, hie.getMessage()), hie)
+                throw new HubIntegrationException(String.format(BuildToolConstants.BOM_WAIT_ERROR, hie.getMessage()), hie)
             }
-            logger.info("Finished waiting for Hub to finish the Bom calculations")
+            logger.info(BuildToolConstants.BOM_WAIT_FINISHED)
         }
 
         def createHubReport(logger: ScalaLogger, buildToolHelper : BuildToolHelper, hubServicesFactory : HubServicesFactory,
