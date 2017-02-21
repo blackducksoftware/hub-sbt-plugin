@@ -30,3 +30,16 @@ pomExtra := (
     <developerConnection>scm:git:git@github.com:blackducksoftware/sbt-hub-plugin.git</developerConnection>
     <url>https://github.com/blackducksoftware/sbt-hub-plugin</url>
   </scm>
+  <developers>
+    <developer>
+      <id>blackduckoss</id>
+      <name>Black Duck OSS</name>
+      <email>bdsoss@blackducksoftware.com</email>
+      <organization>Black Duck Software, Inc.</organization>
+      <organizationUrl>http://www.blackducksoftware.com</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>America/New_York</timezone>
+    </developer>
+  </developers>
