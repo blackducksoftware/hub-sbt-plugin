@@ -34,7 +34,7 @@ class DependencyGatherer(logger: ScalaLogger, includedConfigurations : String) {
             }
           }
         )
-        builder.addNodeWithChildren(projectGav, children)
+        builder.addParentNodeWithChildren(projectGav, children)
         
         builder.buildRootNode()
     }
@@ -42,13 +42,17 @@ class DependencyGatherer(logger: ScalaLogger, includedConfigurations : String) {
     def resolveDependency(builder: DependencyNodeBuilder,module : ModuleReport) : Unit = {
       var moduleGav = new Gav(module.module.organization, module.module.name, module.module.revision)
       if(module.callers != null && !module.callers.isEmpty){
+          var parents = new ArrayList[Gav]()
           module.callers.foreach(caller => {
                 var callerGav = new Gav(caller.caller.organization, caller.caller.name, caller.caller.revision)
-                builder.addNodeWithChild(callerGav, moduleGav)
+                parents.add(callerGav)
             }
           )
+
+          builder.addChildNodeWithParents(moduleGav, parents)
+
       } else {
-          builder.addNode(moduleGav)
+          logger.error(s"Module $module has no Callers!!!!")
       }
     }
     

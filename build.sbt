@@ -13,7 +13,7 @@ resolvers += "JCenter Repository" at "https://jcenter.bintray.com"
 resolvers += Resolver.mavenLocal
 
 libraryDependencies ++= Seq(
-  "com.blackducksoftware.integration" % "hub-common" % "7.4.0-SNAPSHOT",
+  "com.blackducksoftware.integration" % "hub-common" % "8.0.0-SNAPSHOT",
   "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
   "junit" % "junit" % "4.11" % "test"
 )
@@ -43,3 +43,4 @@ pomExtra := (
       <timezone>America/New_York</timezone>
     </developer>
   </developers>
+)
