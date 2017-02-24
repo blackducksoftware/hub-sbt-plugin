@@ -52,7 +52,7 @@ class DependencyGatherer(logger: ScalaLogger, includedConfigurations : String) {
           builder.addChildNodeWithParents(moduleGav, parents)
 
       } else {
-          logger.error(s"Module $module has no Callers!!!!")
+          logger.trace(s"Module $module has no Callers!!!!")
       }
     }
     

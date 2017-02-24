@@ -5,6 +5,7 @@ import sbt._
 import Keys._
 
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException
+import com.blackducksoftware.integration.hub.exception.FailureConditionException
 import com.blackducksoftware.integration.hub.buildtool.BuildToolConstants
 import com.blackducksoftware.integration.hub.builder.HubServerConfigBuilder
 import com.blackducksoftware.integration.hub.global.HubServerConfig
@@ -67,11 +68,12 @@ object BuildBom extends AutoPlugin {
           hubServerConfigBuilder
         }
 
-        def getHubServicesFactory(hubServerConfigBuilder : HubServerConfigBuilder) : HubServicesFactory = {
+        def getHubServicesFactory(logger: ScalaLogger, hubServerConfigBuilder : HubServerConfigBuilder) : HubServicesFactory = {
             var restConnection : CredentialsRestConnection = null
             try {
                 var hubServerConfig = hubServerConfigBuilder.build()
-                restConnection = new CredentialsRestConnection(hubServerConfig)
+                restConnection = new CredentialsRestConnection(logger, hubServerConfig.getHubUrl(), hubServerConfig.getGlobalCredentials().getUsername(), 
+                hubServerConfig.getGlobalCredentials().getDecryptedPassword(), hubServerConfig.getTimeout())
             } catch {
               case e: Exception =>
                   throw new HubIntegrationException(String.format(BuildToolConstants.BUILD_TOOL_CONFIGURATION_ERROR, e.getMessage()), e)
@@ -164,6 +166,8 @@ object BuildBom extends AutoPlugin {
               var policyStatusItem = buildToolHelper.checkPolicies(hubServicesFactory, hubProjectName, hubVersionName)
               handlePolicyStatusItem(logger, policyStatusItem);
           } catch {
+            case e: FailureConditionException =>
+              throw e
             case e: Exception =>
               throw new HubIntegrationException(String.format(BuildToolConstants.CHECK_POLICIES_ERROR, e.getMessage()), e)
           }
@@ -173,9 +177,8 @@ object BuildBom extends AutoPlugin {
         def handlePolicyStatusItem(logger : ScalaLogger, policyStatusItem : PolicyStatusItem): Unit = {
             var policyStatusDescription = new PolicyStatusDescription(policyStatusItem);
             var policyStatusMessage = policyStatusDescription.getPolicyStatusMessage();
-            logger.info(policyStatusMessage);
             if (PolicyStatusEnum.IN_VIOLATION == policyStatusItem.getOverallStatus()) {
-                throw new HubIntegrationException(policyStatusMessage);
+                throw new FailureConditionException(policyStatusMessage);
             }
         }
     }
@@ -215,7 +218,7 @@ object BuildBom extends AutoPlugin {
                 if (deployHubBdio.value || createHubReport.value || checkPolicies.value){
                     var configBuilder = getHubServerConfigBuilder(hubUrl.value, hubUsername.value,hubPassword.value,hubTimeout.value,
                           hubProxyHost.value,hubProxyPort.value,hubNoProxyHosts.value,hubProxyUsername.value,hubProxyPassword.value)
-                    var hubServicesFactory = getHubServicesFactory(configBuilder)
+                    var hubServicesFactory = getHubServicesFactory(scalaLogger,configBuilder)
                     if (deployHubBdio.value){
                         deployHubBDIO(scalaLogger,buildToolHelper, hubServicesFactory, name.value, outputDirectory.value)
                     }
@@ -231,6 +234,12 @@ object BuildBom extends AutoPlugin {
                     }
                 }
             } catch {
+                case e: FailureConditionException =>
+                  if (hubIgnoreFailure.value) {
+                      scalaLogger.error(e.getMessage())
+                  } else {
+                    sys.error(e.getMessage())
+                  }
                 case e: Exception =>
                   if (hubIgnoreFailure.value) {
                       scalaLogger.error(e.getMessage(), e)
