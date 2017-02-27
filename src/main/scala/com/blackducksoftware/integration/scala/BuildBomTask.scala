@@ -4,6 +4,10 @@ import sbt.Def.Initialize
 import sbt._
 import Keys._
 
+import scala.io.Source
+
+import com.blackducksoftware.integration.hub.phonehome.IntegrationInfo
+import com.blackducksoftware.integration.phone.home.enums.ThirdPartyName
 import com.blackducksoftware.integration.hub.exception.HubIntegrationException
 import com.blackducksoftware.integration.hub.exception.FailureConditionException
 import com.blackducksoftware.integration.hub.buildtool.BuildToolConstants
@@ -20,6 +24,7 @@ import com.blackducksoftware.integration.hub.api.policy.PolicyStatusItem
 import com.blackducksoftware.integration.hub.dataservice.policystatus.PolicyStatusDescription
 
 import java.io.IOException
+import java.util.Properties
 
 object BuildBom extends AutoPlugin {
    override def requires = empty
@@ -124,10 +129,17 @@ object BuildBom extends AutoPlugin {
         }
 
         def deployHubBDIO(logger: ScalaLogger, buildToolHelper : BuildToolHelper, hubServicesFactory : HubServicesFactory, projectName : String, 
-          outputDirectory : File): Unit = {
+          outputDirectory : File, hubServerConfig : HubServerConfig, integrationInfo : IntegrationInfo): Unit = {
           logger.info(String.format(BuildToolConstants.DEPLOY_HUB_OUTPUT_STARTING, getBdioFilename(projectName)))
            try {
               buildToolHelper.deployHubOutput(hubServicesFactory, outputDirectory, projectName)
+              try {
+                  var phoneHomeDataService = hubServicesFactory.createPhoneHomeDataService(logger)
+                  phoneHomeDataService.phoneHome(hubServerConfig, integrationInfo)
+                } catch {
+                  case e: Exception =>
+                    logger.debug(s"Could not phone home : ${e.getMessage}", e)
+                }
           } catch {
             case e: Exception =>
               throw new HubIntegrationException(String.format(BuildToolConstants.DEPLOY_HUB_OUTPUT_ERROR, e.getMessage()), e)
@@ -206,6 +218,16 @@ object BuildBom extends AutoPlugin {
         buildBomTask :=  { 
             var scalaLogger = new ScalaLogger(streams.value.log)
             var buildToolHelper = new BuildToolHelper(scalaLogger)
+
+            var sbtVersion = appConfiguration.value.provider.id.version
+
+            val reader = Source.fromURL(getClass.getResource("/version.txt")).bufferedReader()
+            var pluginVersion : String = null
+            try{
+              pluginVersion = reader.readLine()
+            } finally{
+              reader.close()
+            }
             try {
                 if (createFlatDependencyList.value){
                     createFlatDependencyList(scalaLogger, update.value, buildToolHelper, includedConfigurations.value, 
@@ -220,7 +242,10 @@ object BuildBom extends AutoPlugin {
                           hubProxyHost.value,hubProxyPort.value,hubNoProxyHosts.value,hubProxyUsername.value,hubProxyPassword.value)
                     var hubServicesFactory = getHubServicesFactory(scalaLogger,configBuilder)
                     if (deployHubBdio.value){
-                        deployHubBDIO(scalaLogger,buildToolHelper, hubServicesFactory, name.value, outputDirectory.value)
+                        var integrationInfo = new IntegrationInfo(ThirdPartyName.SBT.getName(), sbtVersion, pluginVersion)
+                        var hubServerConfig = configBuilder.build()
+                        deployHubBDIO(scalaLogger,buildToolHelper, hubServicesFactory, name.value, outputDirectory.value, 
+                          hubServerConfig, integrationInfo)
                     }
                     if(createHubReport.value || checkPolicies.value){
                         waitForHub(scalaLogger, buildToolHelper, hubServicesFactory, hubProjectName.value, hubVersionName.value, hubScanTimeout.value.toLong)
