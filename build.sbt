@@ -42,6 +42,7 @@ publishTo := {
 }
 
 pomExtra := (
+  <url>https://github.com/blackducksoftware/sbt-hub-plugin</url>
   <scm>
     <connection>scm:git:git://github.com/blackducksoftware/sbt-hub-plugin.git/</connection>
     <developerConnection>scm:git:git@github.com:blackducksoftware/sbt-hub-plugin.git</developerConnection>
