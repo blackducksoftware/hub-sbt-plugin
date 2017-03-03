@@ -8,11 +8,11 @@ version := "1.0.0-SNAPSHOT"
 
 scalaVersion := "2.10.6"
 
+resolvers += Resolver.mavenLocal
 resolvers += "Maven Repository" at "https://repo.maven.apache.org/maven2/"
 resolvers += "JCenter Repository" at "https://jcenter.bintray.com"
 resolvers += "Sonatype Releases Repository" at "https://oss.sonatype.org/content/repositories/releases"
 resolvers += "Sonatype Snapshots Repository" at "https://oss.sonatype.org/content/repositories/snapshots"
-resolvers += Resolver.mavenLocal
 
 libraryDependencies ++= Seq(
   "com.blackducksoftware.integration" % "hub-common" % "8.0.0-SNAPSHOT",

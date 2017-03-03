@@ -19,9 +19,9 @@ import com.blackducksoftware.integration.hub.buildtool.FlatDependencyListWriter
 import com.blackducksoftware.integration.hub.rest.RestConnection
 import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection
 import com.blackducksoftware.integration.hub.service.HubServicesFactory
-import com.blackducksoftware.integration.hub.api.policy.PolicyStatusEnum
 import com.blackducksoftware.integration.hub.api.policy.PolicyStatusItem
 import com.blackducksoftware.integration.hub.dataservice.policystatus.PolicyStatusDescription
+import com.blackducksoftware.integration.hub.model.`type`.VersionBomPolicyStatusOverallStatusEnum
 
 import java.io.IOException
 import java.util.Properties
@@ -189,7 +189,7 @@ object BuildBom extends AutoPlugin {
         def handlePolicyStatusItem(logger : ScalaLogger, policyStatusItem : PolicyStatusItem): Unit = {
             var policyStatusDescription = new PolicyStatusDescription(policyStatusItem);
             var policyStatusMessage = policyStatusDescription.getPolicyStatusMessage();
-            if (PolicyStatusEnum.IN_VIOLATION == policyStatusItem.getOverallStatus()) {
+            if (VersionBomPolicyStatusOverallStatusEnum.IN_VIOLATION == policyStatusItem.getOverallStatus()) {
                 throw new FailureConditionException(policyStatusMessage);
             }
         }
