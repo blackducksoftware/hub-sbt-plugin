@@ -19,9 +19,9 @@ import com.blackducksoftware.integration.hub.buildtool.FlatDependencyListWriter
 import com.blackducksoftware.integration.hub.rest.RestConnection
 import com.blackducksoftware.integration.hub.rest.CredentialsRestConnection
 import com.blackducksoftware.integration.hub.service.HubServicesFactory
-import com.blackducksoftware.integration.hub.api.policy.PolicyStatusItem
+import com.blackducksoftware.integration.hub.model.view.VersionBomPolicyStatusView
 import com.blackducksoftware.integration.hub.dataservice.policystatus.PolicyStatusDescription
-import com.blackducksoftware.integration.hub.model.`type`.VersionBomPolicyStatusOverallStatusEnum
+import com.blackducksoftware.integration.hub.model.enumeration.VersionBomPolicyStatusOverallStatusEnum
 
 import java.io.IOException
 import java.util.Properties
@@ -186,7 +186,7 @@ object BuildBom extends AutoPlugin {
           logger.info(String.format(BuildToolConstants.CHECK_POLICIES_FINISHED, hubProjectName))
         }
 
-        def handlePolicyStatusItem(logger : ScalaLogger, policyStatusItem : PolicyStatusItem): Unit = {
+        def handlePolicyStatusItem(logger : ScalaLogger, policyStatusItem : VersionBomPolicyStatusView): Unit = {
             var policyStatusDescription = new PolicyStatusDescription(policyStatusItem);
             var policyStatusMessage = policyStatusDescription.getPolicyStatusMessage();
             if (VersionBomPolicyStatusOverallStatusEnum.IN_VIOLATION == policyStatusItem.getOverallStatus()) {
