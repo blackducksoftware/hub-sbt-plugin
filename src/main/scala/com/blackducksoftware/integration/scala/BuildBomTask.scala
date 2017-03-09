@@ -73,12 +73,23 @@ object BuildBom extends AutoPlugin {
           hubServerConfigBuilder
         }
 
+        def getRestConnection(logger: ScalaLogger, hubServerConfig: HubServerConfig) : RestConnection = {
+            var restConnection = new CredentialsRestConnection(logger, hubServerConfig.getHubUrl(),
+                    hubServerConfig.getGlobalCredentials().getUsername(), hubServerConfig.getGlobalCredentials().getDecryptedPassword(),
+                    hubServerConfig.getTimeout())
+            restConnection.proxyHost = hubServerConfig.getProxyInfo().getHost()
+            restConnection.proxyPort = hubServerConfig.getProxyInfo().getPort()
+            restConnection.proxyNoHosts = hubServerConfig.getProxyInfo().getIgnoredProxyHosts()
+            restConnection.proxyUsername = hubServerConfig.getProxyInfo().getUsername()
+            restConnection.proxyPassword = hubServerConfig.getProxyInfo().getDecryptedPassword()
+            restConnection
+        }
+
         def getHubServicesFactory(logger: ScalaLogger, hubServerConfigBuilder : HubServerConfigBuilder) : HubServicesFactory = {
-            var restConnection : CredentialsRestConnection = null
+            var restConnection : RestConnection = null
             try {
                 var hubServerConfig = hubServerConfigBuilder.build()
-                restConnection = new CredentialsRestConnection(logger, hubServerConfig.getHubUrl(), hubServerConfig.getGlobalCredentials().getUsername(), 
-                hubServerConfig.getGlobalCredentials().getDecryptedPassword(), hubServerConfig.getTimeout())
+                restConnection = getRestConnection(logger, hubServerConfig)
             } catch {
               case e: Exception =>
                   throw new HubIntegrationException(String.format(BuildToolConstants.BUILD_TOOL_CONFIGURATION_ERROR, e.getMessage()), e)
