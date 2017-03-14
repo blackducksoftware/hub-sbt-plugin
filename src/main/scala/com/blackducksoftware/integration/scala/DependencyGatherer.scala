@@ -41,19 +41,21 @@ class DependencyGatherer(logger: ScalaLogger, includedConfigurations : String) {
     
     def resolveDependency(builder: DependencyNodeBuilder,module : ModuleReport) : Unit = {
       var moduleGav = new Gav(module.module.organization, module.module.name, module.module.revision)
+      logger.trace(s"Module $moduleGav")
       if(module.callers != null && !module.callers.isEmpty){
           var parents = new ArrayList[Gav]()
           module.callers.foreach(caller => {
                 var callerGav = new Gav(caller.caller.organization, caller.caller.name, caller.caller.revision)
                 parents.add(callerGav)
+                logger.trace(s"Parent $callerGav")
             }
           )
-
           builder.addChildNodeWithParents(moduleGav, parents)
-
       } else {
-          logger.trace(s"Module $module has no Callers!!!!")
+          logger.debug(s"Module $module has no Callers!!!!")
       }
+      logger.trace(" ")
+      logger.trace(" ")
     }
     
 }

@@ -74,15 +74,7 @@ object BuildBom extends AutoPlugin {
         }
 
         def getRestConnection(logger: ScalaLogger, hubServerConfig: HubServerConfig) : RestConnection = {
-            var restConnection = new CredentialsRestConnection(logger, hubServerConfig.getHubUrl(),
-                    hubServerConfig.getGlobalCredentials().getUsername(), hubServerConfig.getGlobalCredentials().getDecryptedPassword(),
-                    hubServerConfig.getTimeout())
-            restConnection.proxyHost = hubServerConfig.getProxyInfo().getHost()
-            restConnection.proxyPort = hubServerConfig.getProxyInfo().getPort()
-            restConnection.proxyNoHosts = hubServerConfig.getProxyInfo().getIgnoredProxyHosts()
-            restConnection.proxyUsername = hubServerConfig.getProxyInfo().getUsername()
-            restConnection.proxyPassword = hubServerConfig.getProxyInfo().getDecryptedPassword()
-            restConnection
+            hubServerConfig.createCredentialsRestConnection(logger);
         }
 
         def getHubServicesFactory(logger: ScalaLogger, hubServerConfigBuilder : HubServerConfigBuilder) : HubServicesFactory = {
