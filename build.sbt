@@ -1,6 +1,6 @@
 sbtPlugin := true
 
-name := "sbt-hub-plugin"
+name := "hub-sbt-plugin"
 
 organization := "com.blackducksoftware.integration"
 
@@ -45,7 +45,7 @@ pomExtra := (
   <url>https://github.com/blackducksoftware/sbt-hub-plugin</url>
   <scm>
     <connection>scm:git:git://github.com/blackducksoftware/sbt-hub-plugin.git/</connection>
-    <developerConnection>scm:git:git@github.com:blackducksoftware/sbt-hub-plugin.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:blackducksoftware/hub-sbt-plugin.git</developerConnection>
     <url>https://github.com/blackducksoftware/sbt-hub-plugin</url>
   </scm>
   <developers>
