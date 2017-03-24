@@ -15,7 +15,7 @@ resolvers += "Sonatype Releases Repository" at "https://oss.sonatype.org/content
 resolvers += "Sonatype Snapshots Repository" at "https://oss.sonatype.org/content/repositories/snapshots"
 
 libraryDependencies ++= Seq(
-  "com.blackducksoftware.integration" % "hub-common" % "8.4.0-SNAPSHOT",
+  "com.blackducksoftware.integration" % "hub-common" % "9.0.0",
   "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
   "junit" % "junit" % "4.11" % "test"
 )
