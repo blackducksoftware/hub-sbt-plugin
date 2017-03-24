@@ -32,6 +32,7 @@ object BuildBom extends AutoPlugin {
   
     object autoImport {
         val hubIgnoreFailure = SettingKey[Boolean]("hubIgnoreFailure", "Should buildBom ignore failures")
+        val hubCodeLocationName = SettingKey[String]("hubCodeLocationName", "The Code Location name")
         val hubProjectName = SettingKey[String]("hubProjectName", "The Hub project name")
         val hubVersionName = SettingKey[String]("hubVersionName", "The Hub project version")
         val hubUrl = SettingKey[String]("hubUrl", "The Hub URL")
@@ -115,14 +116,14 @@ object BuildBom extends AutoPlugin {
         }
 
         def createBDIO(logger: ScalaLogger, report: UpdateReport, buildToolHelper : BuildToolHelper, name : String, 
-            includedConfigurations : String, organization : String, projectName : String, projectVersion : String,
-            outputDirectory : File): Unit = {
+            includedConfigurations : String, organization : String, codeLocationName : String, projectName : String,
+            projectVersion : String, outputDirectory : File): Unit = {
           logger.info(String.format(BuildToolConstants.CREATE_HUB_OUTPUT_STARTING, getBdioFilename(projectName)))
            try {
               var dependencyGatherer = new DependencyGatherer(logger, includedConfigurations)
               var rootNode = dependencyGatherer.getFullyPopulatedRootNode(report, organization, projectName, projectVersion)
               
-              buildToolHelper.createHubOutput(rootNode, name, projectName,
+              buildToolHelper.createHubOutput(rootNode, name, codeLocationName, projectName,
                         projectVersion, outputDirectory)
           } catch {
             case ioe: IOException =>
@@ -202,6 +203,7 @@ object BuildBom extends AutoPlugin {
   
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
         hubIgnoreFailure := { false },
+        hubCodeLocationName := { "" },
         hubProjectName := { name.value },
         hubVersionName := { version.value },
         hubTimeout := { 120 },
@@ -238,7 +240,7 @@ object BuildBom extends AutoPlugin {
                 }
                 if (createHubBdio.value){
                     createBDIO(scalaLogger, update.value, buildToolHelper, name.value, includedConfigurations.value, 
-                        organization.value, hubProjectName.value, hubVersionName.value, outputDirectory.value)
+                        organization.value, hubCodeLocationName.value, hubProjectName.value, hubVersionName.value, outputDirectory.value)
                 }
                 if (deployHubBdio.value || createHubReport.value || checkPolicies.value){
                     var configBuilder = getHubServerConfigBuilder(hubUrl.value, hubUsername.value,hubPassword.value,hubTimeout.value,
