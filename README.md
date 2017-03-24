@@ -8,4 +8,4 @@ Hub SBT: Create BOMs, check policies - all from your sbt build
 You can download the latest release from Maven Central.
 
 ## Documentation ##
-All documentation for hub-common can be found on the base project:  https://github.com/blackducksoftware/hub-common/wiki
+All documentation for hub-common can be found on the base project:  https://github.com/blackducksoftware/sbt-hub-plugin/wiki
