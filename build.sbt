@@ -4,7 +4,7 @@ name := "hub-sbt-plugin"
 
 organization := "com.blackducksoftware.integration"
 
-version := "1.0.0"
+version := "1.0.1-SNAPSHOT"
 
 scalaVersion := "2.10.6"
 
