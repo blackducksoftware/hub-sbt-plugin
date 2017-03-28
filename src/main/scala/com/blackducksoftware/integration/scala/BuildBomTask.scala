@@ -197,31 +197,60 @@ object BuildBom extends AutoPlugin {
                 throw new FailureConditionException(policyStatusMessage);
             }
         }
+
+        def getSettingStringValue(propertyName : String, defaultValue : String) : String = {
+            var value = defaultValue
+            if(System.getProperty(propertyName) != null){
+              value = System.getProperty(propertyName) 
+            } 
+            value
+        }
+
+        def getSettingBooleanValue(propertyName : String, defaultValue : Boolean) : Boolean = {
+            var value = defaultValue
+            if(System.getProperty(propertyName) != null){
+              value = System.getProperty(propertyName).toBoolean 
+            } 
+            value
+        }
+
+        def getSettingIntegerValue(propertyName : String, defaultValue : Integer) : Integer = {
+            var value = defaultValue
+            if(System.getProperty(propertyName) != null){
+              value = System.getProperty(propertyName).toInt 
+            } 
+            value
+        }
+
     }
   
   import autoImport._
   
   override def projectSettings: Seq[Def.Setting[_]] = Seq(
-        hubIgnoreFailure := { false },
-        hubCodeLocationName := { "" },
-        hubProjectName := { name.value },
-        hubVersionName := { version.value },
-        hubTimeout := { 120 },
-        hubProxyHost := { "" },
-        hubProxyPort := { 0 },
-        hubNoProxyHosts := { "" },
-        hubProxyUsername := { "" },
-        hubProxyPassword := { "" },
-        createFlatDependencyList := { false },
-        createHubBdio := { true },
-        deployHubBdio := { true },
-        createHubReport := { false },
-        checkPolicies := { false },
-        hubScanTimeout := { 300 },
-        includedConfigurations := { "compile" },
+        hubIgnoreFailure := { getSettingBooleanValue("hubIgnoreFailure", false) },
+        hubUrl := { getSettingStringValue("hubUrl" ,"") },
+        hubUsername := { getSettingStringValue("hubUsername" ,"") },
+        hubPassword := { getSettingStringValue("hubPassword" ,"") },
+        hubCodeLocationName := { getSettingStringValue("hubCodeLocationName" ,"") },
+        hubProjectName := { getSettingStringValue("hubCodeLocationName" , name.value) },
+        hubVersionName := { getSettingStringValue("hubCodeLocationName" , version.value) },
+        hubTimeout := { getSettingIntegerValue("hubTimeout" ,120) },
+        hubProxyHost := { getSettingStringValue("hubProxyHost" ,"") },
+        hubProxyPort := { getSettingIntegerValue("hubProxyPort" ,0) },
+        hubNoProxyHosts := { getSettingStringValue("hubNoProxyHosts" ,"") },
+        hubProxyUsername := { getSettingStringValue("hubProxyUsername" ,"") },
+        hubProxyPassword := { getSettingStringValue("hubProxyPassword" ,"") },
+        createFlatDependencyList := { getSettingBooleanValue("createFlatDependencyList", false) },
+        createHubBdio := { getSettingBooleanValue("createHubBdio", true) },
+        deployHubBdio := { getSettingBooleanValue("deployHubBdio", true) },
+        createHubReport := { getSettingBooleanValue("createHubReport", false) },
+        checkPolicies := { getSettingBooleanValue("checkPolicies", false) },
+        hubScanTimeout := { getSettingIntegerValue("hubScanTimeout" ,300) },
+        includedConfigurations := { getSettingStringValue("includedConfigurations", "compile") },
         outputDirectory := { new File(target.value + java.io.File.separator +"blackduck") },
         buildBomTask :=  { 
             var scalaLogger = new ScalaLogger(streams.value.log)
+            scalaLogger.error(deployHubBdio.value.toString)
             var buildToolHelper = new BuildToolHelper(scalaLogger)
 
             var sbtVersion = appConfiguration.value.provider.id.version
