@@ -1,6 +1,10 @@
 language: scala
 scala:
   2.10.6
-  
+
 script:
   - sbt clean package
+
+after_success:
+- sbt -DdeployHubBdio=false buildBom
+- bash <(curl -s https://copilot.blackducksoftware.com/bash/travis) ./target/blackduck/*_bdio.jsonld
