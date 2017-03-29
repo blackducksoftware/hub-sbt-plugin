@@ -250,7 +250,6 @@ object BuildBom extends AutoPlugin {
         outputDirectory := { new File(target.value + java.io.File.separator +"blackduck") },
         buildBomTask :=  { 
             var scalaLogger = new ScalaLogger(streams.value.log)
-            scalaLogger.error(deployHubBdio.value.toString)
             var buildToolHelper = new BuildToolHelper(scalaLogger)
 
             var sbtVersion = appConfiguration.value.provider.id.version
